@@ -1,0 +1,2166 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hauskreis Controlling</title>
+    
+    <!-- Frameworks -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Eigenes Design (Darf beim Generieren nicht gelöscht werden) -->
+    <style id="custom-styles">
+        /* Verhindert das Springen der Seite bei Einblendung der Scrollbar noch zuverlässiger */
+        html { scrollbar-gutter: stable; }
+        
+        .custom-scrollbar::-webkit-scrollbar { height: 12px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 8px; border: 3px solid #f1f5f9; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: #94a3b8; }
+    </style>
+
+    <!-- HIER LIEGEN DIE DATEN: Die App liest das und speichert neue Einträge hier ab -->
+    <script id="hauskreis-data" type="application/json">
+[
+  {
+    "datum": "2021-04-27",
+    "status": "Stattgefunden",
+    "gastgeber": "Andreas Nickel",
+    "ort": "Dirschauer Straße 33a",
+    "anmerkungen": "Erstes erwähntes Treffen unter Corona-Auflagen bis 22 Uhr. | Dabei: Andreas Nickel, Al Ex, Peter Eckert"
+  },
+  {
+    "datum": "2021-06-15",
+    "status": "Ausgefallen",
+    "gastgeber": "-",
+    "ort": "-",
+    "anmerkungen": ""
+  },
+  {
+    "datum": "2021-06-22",
+    "status": "Stattgefunden",
+    "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Hauskreis-Treffen um 19:30 Uhr. | Dabei: Al Ex, Andreas Nickel"
+  },
+  {
+    "datum": "2021-06-29",
+    "status": "Stattgefunden",
+    "gastgeber": "Al Ex / Restaurant",
+    "ort": "Treffen bei Alex, dann Chinese Phönix (Altenhagen)",
+    "anmerkungen": "Peter Eckerts Geburtstag. | Dabei: Andreas Nickel, Al Ex, Peter Eckert"
+  },
+  {
+    "datum": "2021-07-06",
+    "status": "Ausgefallen",
+    "gastgeber": "-",
+    "ort": "-",
+    "anmerkungen": ""
+  },
+  {
+    "datum": "2021-07-13",
+    "status": "Stattgefunden",
+    "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Spontanes Treffen (nur Peter und Alex). | Dabei: Peter Eckert, Al Ex"
+  },
+  {
+    "datum": "2021-08-03",
+    "status": "Stattgefunden",
+    "gastgeber": "Peter Eckert",
+    "ort": "Fritz-Reuter-Str. 36",
+    "anmerkungen": "Nach Peters Urlaubsrückkehr. | Dabei: Al Ex, Andreas Nickel, Peter Eckert"
+  },
+  {
+    "datum": "2021-08-10",
+    "status": "Stattgefunden",
+    "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Bestätigt durch Peter und Andreas. | Dabei: Al Ex, Andreas Nickel, Peter Eckert"
+  },
+  {
+    "datum": "2021-08-17",
+    "status": "Stattgefunden",
+    "gastgeber": "Andreas Nickel",
+    "ort": "Dirschauer Straße 33a",
+    "anmerkungen": "Reguläres Treffen. | Dabei: Al Ex, Andreas Nickel, Peter Eckert"
+  },
+  {
+    "datum": "2021-08-23",
+    "status": "Stattgefunden",
+    "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Al Ex, Andreas Nickel, Peter Eckert"
+  },
+  {
+    "datum": "2021-08-24",
+    "status": "Stattgefunden",
+    "gastgeber": "Andreas Nickel",
+    "ort": "Dirschauer Straße 33a",
+    "anmerkungen": "Fokus-Themen: Zuwanderung und Familienpolitik."
+  },
+  {
+    "datum": "2021-08-31",
+    "status": "Ausgefallen",
+    "gastgeber": "-",
+    "ort": "-",
+    "anmerkungen": ""
+  },
+  {
+    "datum": "2021-09-07",
+    "status": "Stattgefunden",
+    "gastgeber": "Peter Eckert",
+    "ort": "Fritz-Reuter-Str. 36",
+    "anmerkungen": "Andreas kam erst gegen 20:30 Uhr dazu. | Dabei: Peter Eckert, Andreas Nickel, Al Ex"
+  },
+  {
+    "datum": "2021-09-14",
+    "status": "Stattgefunden",
+    "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Bestätigt."
+  },
+  {
+    "datum": "2021-09-21",
+    "status": "Stattgefunden",
+    "gastgeber": "Andreas Nickel",
+    "ort": "Dirschauer Straße 33a",
+    "anmerkungen": "Peter fehlte wegen Erkältung. | Dabei: Andreas Nickel, Al Ex"
+  },
+  {
+    "datum": "2021-09-28",
+    "status": "Stattgefunden",
+    "gastgeber": "Peter Eckert",
+    "ort": "Bei Peter Eckert",
+    "anmerkungen": "Dabei: Al Ex, Peter Eckert"
+  },
+  {
+    "datum": "2021-10-05",
+    "status": "Stattgefunden",
+    "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Verlegt zu Alex, da Peter Besuch hatte. | Dabei: Al Ex, Andreas Nickel, Peter Eckert"
+  },
+  {
+    "datum": "2021-10-12",
+    "status": "Stattgefunden",
+    "gastgeber": "Andreas Nickel",
+    "ort": "Dirschauer Straße 33a",
+    "anmerkungen": "Thema: Eifersüchtiger Gott (Bibelverse geteilt). | Dabei: Al Ex, Andreas Nickel, Peter Eckert"
+  },
+  {
+    "datum": "2021-10-19",
+    "status": "Stattgefunden",
+    "gastgeber": "Eduard Günter",
+    "ort": "Bei Eduard (Eddy)",
+    "anmerkungen": "Daniel Frank war als Gast dabei. | Dabei: Al Ex, Andreas Nickel, Eduard Günter, Peter Eckert"
+  },
+  {
+    "datum": "2021-10-26",
+    "status": "Stattgefunden",
+    "gastgeber": "Al Ex / Andreas Nickel",
+    "ort": "Dirschauer Straße 33a",
+    "anmerkungen": "Verlegt zu Andreas, da Alex erkältet war. | Dabei: Al Ex, Andreas Nickel, Peter Eckert"
+  },
+  {
+    "datum": "2021-11-02",
+    "status": "Stattgefunden",
+    "gastgeber": "Andreas Nickel",
+    "ort": "Dirschauer Straße 33a",
+    "anmerkungen": "Treffen um 19:30 Uhr. | Dabei: Andreas Nickel, Peter Eckert, Al Ex"
+  },
+  {
+    "datum": "2021-11-09",
+    "status": "Stattgefunden",
+    "gastgeber": "Peter Eckert",
+    "ort": "Fritz-Reuter-Str. 36",
+    "anmerkungen": "Reguläres Treffen. | Dabei: Peter Eckert, Daniel Frank, Al Ex, Andreas Nickel"
+  },
+  {
+    "datum": "2021-11-16",
+    "status": "Stattgefunden",
+    "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Andreas Nickel, Peter Eckert"
+  },
+  {
+    "datum": "2021-11-21",
+    "status": "Stattgefunden",
+    "gastgeber": "Eduard Günter",
+    "ort": "Bei Eduard Günter",
+    "anmerkungen": "Dabei: Al Ex, Andreas Nickel, Eduard Günter, Peter Eckert"
+  },
+  {
+    "datum": "2021-11-23",
+    "status": "Stattgefunden",
+    "gastgeber": "Daniel Frank",
+    "ort": "Fontanestr. 15 (2. Etage)",
+    "anmerkungen": "Erstes Treffen bei Daniel Frank (Bielefeld-Heepen). | Dabei: Al Ex, Eduard Günter, Peter Eckert, Daniel Frank"
+  },
+  {
+    "datum": "2021-11-30",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Dirschauer Straße 33a",
+    "anmerkungen": "Peter fehlte wegen Bindehautentzündung. | Dabei: Al Ex, Eduard Günter, Andreas Nickel, Daniel Frank"
+  },
+  {
+    "datum": "2021-12-06",
+    "status": "Geburtstag",
+    "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Andreas Nickel, Al Ex, Peter Eckert, Eduard Günter, Daniel Frank"
+  },
+  {
+    "datum": "2021-12-07",
+    "status": "Geburtstag",
+    "gastgeber": "Andreas Nickel",
+    "ort": "Dirschauer Straße 33a",
+    "anmerkungen": "Nachfeier Geburtstag Andreas (mit Essen)."
+  },
+  {
+    "datum": "2021-12-14",
+    "status": "Stattgefunden",
+    "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Andreas Nickel, Daniel Frank, Peter Eckert, Eduard Günter"
+  },
+  {
+    "datum": "2021-12-28",
+    "status": "Stattgefunden",
+    "gastgeber": "Daniel Frank",
+    "ort": "Bei Daniel Frank",
+    "anmerkungen": "Dabei: Peter Eckert, Al Ex, Daniel Frank, Eduard Günter"
+  },
+  {
+    "datum": "2022-01-03",
+    "status": "Stattgefunden",
+    "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Al Ex, Peter Eckert, Daniel Frank, Andreas Nickel"
+  },
+  {
+    "datum": "2022-01-11",
+    "status": "Stattgefunden",
+    "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Peter Eckert, Daniel Frank, Andreas Nickel"
+  },
+  {
+    "datum": "2022-01-18",
+    "status": "Stattgefunden", "gastgeber": "Peter Eckert",
+    "ort": "Bei Peter Eckert",
+    "anmerkungen": "Dabei: Andreas Nickel, Peter Eckert, Daniel Frank, Al Ex"
+  },
+  {
+    "datum": "2022-01-25",
+    "status": "Stattgefunden", "gastgeber": "Daniel Frank",
+    "ort": "Fontanestr. 15",
+    "anmerkungen": "Treffen um 19:30 Uhr. | Dabei: Daniel Frank, Al Ex, Andreas Nickel, Peter Eckert"
+  },
+  {
+    "datum": "2022-02-01",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Peter Eckert, Andreas Nickel, Daniel Frank"
+  },
+  {
+    "datum": "2022-02-08",
+    "status": "Stattgefunden",
+    "gastgeber": "?",
+    "ort": "?",
+    "anmerkungen": "Dabei: Al Ex, Andreas Nickel, Peter Eckert, Daniel Frank"
+  },
+  {
+    "datum": "2022-02-15",
+    "status": "Stattgefunden",
+    "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Andreas Nickel, Peter Eckert, Eduard Günter"
+  },
+  {
+    "datum": "2022-02-22",
+    "status": "Stattgefunden",
+    "gastgeber": "Peter Eckert",
+    "ort": "Bei Peter Eckert",
+    "anmerkungen": "Dabei: Peter Eckert, Daniel Frank, Al Ex, Andreas Nickel"
+  },
+  {
+    "datum": "2022-03-01",
+    "status": "Stattgefunden", "gastgeber": "Daniel Frank",
+    "ort": "Bei Daniel Frank",
+    "anmerkungen": "Dabei: Daniel Frank, Andreas Nickel, Al Ex, Peter Eckert"
+  },
+  {
+    "datum": "2022-03-07",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Daniel Frank, Peter Eckert"
+  },
+  {
+    "datum": "2022-03-22",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Andreas Nickel, Peter Eckert, Al Ex"
+  },
+  {
+    "datum": "2022-04-05",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Peter Eckert, Andreas Nickel"
+  },
+  {
+    "datum": "2022-04-12",
+    "status": "Stattgefunden", "gastgeber": "Peter Eckert",
+    "ort": "Bei Peter Eckert",
+    "anmerkungen": "Dabei: Peter Eckert, Al Ex, Andreas Nickel"
+  },
+  {
+    "datum": "2022-04-19",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Al Ex, Peter Eckert, Andreas Nickel"
+  },
+  {
+    "datum": "2022-04-25",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Andreas Nickel, Peter Eckert"
+  },
+  {
+    "datum": "2022-05-02",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Andreas Nickel, Peter Eckert"
+  },
+  {
+    "datum": "2022-05-10",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Al Ex, Andreas Nickel, Peter Eckert"
+  },
+  {
+    "datum": "2022-05-17",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Andreas Nickel, Peter Eckert"
+  },
+  {
+    "datum": "2022-05-24",
+    "status": "Stattgefunden", "gastgeber": "Peter Eckert",
+    "ort": "Bei Peter Eckert",
+    "anmerkungen": "Dabei: Al Ex, Andreas Nickel, Peter Eckert"
+  },
+  {
+    "datum": "2022-05-31",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Al Ex, Peter Eckert"
+  },
+  {
+    "datum": "2022-06-07",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Andreas Nickel, Peter Eckert"
+  },
+  {
+    "datum": "2022-06-14",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Andreas Nickel, Peter Eckert, Al Ex"
+  },
+  {
+    "datum": "2022-06-21",
+    "status": "Stattgefunden", "gastgeber": "?",
+    "ort": "?",
+    "anmerkungen": "Dabei: Andreas Nickel, Al Ex"
+  },
+  {
+    "datum": "2022-07-05",
+    "status": "Ausgefallen",
+    "gastgeber": "-",
+    "ort": "-",
+    "anmerkungen": ""
+  },
+  {
+    "datum": "2022-07-19",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Andreas Nickel, Peter Eckert, Al Ex"
+  },
+  {
+    "datum": "2022-07-26",
+    "status": "Stattgefunden", "gastgeber": "Peter Eckert",
+    "ort": "Bei Peter Eckert",
+    "anmerkungen": "Dabei: Peter Eckert, Daniel Frank, Andreas Nickel, Al Ex"
+  },
+  {
+    "datum": "2022-08-02",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Daniel Frank, Eduard Günter, Peter Eckert"
+  },
+  {
+    "datum": "2022-08-09",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Andreas Nickel, Peter Eckert, Al Ex"
+  },
+  {
+    "datum": "2022-08-16",
+    "status": "Stattgefunden", "gastgeber": "Daniel Frank",
+    "ort": "Geschwister-Scholl-Str. 12, Oerlinghausen",
+    "anmerkungen": "Hauskreis bei Daniel nach seinem Umzug. | Dabei: Daniel Frank, Al Ex, Peter Eckert, Andreas Nickel"
+  },
+  {
+    "datum": "2022-08-17",
+    "status": "Geburtstag",
+    "gastgeber": "?",
+    "ort": "?",
+    "anmerkungen": ""
+  },
+  {
+    "datum": "2022-08-18",
+    "status": "Geburtstag",
+    "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Andreas Nickel, Peter Eckert"
+  },
+  {
+    "datum": "2022-08-23",
+    "status": "Stattgefunden", "gastgeber": "Peter Eckert",
+    "ort": "Bei Peter Eckert",
+    "anmerkungen": "Dabei: Peter Eckert, Al Ex, Andreas Nickel"
+  },
+  {
+    "datum": "2022-08-30",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Peter Eckert"
+  },
+  {
+    "datum": "2022-09-06",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Andreas Nickel, Daniel Frank, Al Ex"
+  },
+  {
+    "datum": "2022-09-13",
+    "status": "Stattgefunden", "gastgeber": "?",
+    "ort": "?",
+    "anmerkungen": "Dabei: Daniel Frank, Al Ex, Andreas Nickel, Eduard Günter"
+  },
+  {
+    "datum": "2022-09-20",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Peter Eckert, Andreas Nickel, Eduard Günter"
+  },
+  {
+    "datum": "2022-09-27",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Andreas Nickel, Al Ex"
+  },
+  {
+    "datum": "2022-10-04",
+    "status": "Stattgefunden", "gastgeber": "Peter Eckert",
+    "ort": "Bei Peter Eckert",
+    "anmerkungen": "Dabei: Peter Eckert, Al Ex, Andreas Nickel"
+  },
+  {
+    "datum": "2022-10-19",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Al Ex, Andreas Nickel"
+  },
+  {
+    "datum": "2022-10-25",
+    "status": "Stattgefunden", "gastgeber": "Daniel Frank",
+    "ort": "Bei Daniel Frank",
+    "anmerkungen": "Dabei: Daniel Frank, Peter Eckert, Al Ex, Andreas Nickel"
+  },
+  {
+    "datum": "2022-10-26",
+    "status": "Stattgefunden", "gastgeber": "Daniel Frank",
+    "ort": "Oerlinghausen",
+    "anmerkungen": "Umstellung auf Mittwochstermine wegen Karinas Terminen."
+  },
+  {
+    "datum": "2022-11-02",
+    "status": "Stattgefunden", "gastgeber": "Peter Eckert",
+    "ort": "Bei Peter Eckert",
+    "anmerkungen": "Dabei: Peter Eckert, Al Ex, Andreas Nickel"
+  },
+  {
+    "datum": "2022-11-05",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Peter Eckert, Andreas Nickel"
+  },
+  {
+    "datum": "2022-11-09",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Daniel Frank, Peter Eckert, Andreas Nickel"
+  },
+  {
+    "datum": "2022-11-16",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Andreas Nickel, Peter Eckert, Al Ex"
+  },
+  {
+    "datum": "2022-11-30",
+    "status": "Stattgefunden", "gastgeber": "Peter Eckert",
+    "ort": "Fritz-Reuter-Str. 36",
+    "anmerkungen": "Hauskreis um 19:30 Uhr. | Dabei: Al Ex, Peter Eckert, Andreas Nickel"
+  },
+  {
+    "datum": "2022-12-07",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Peter Eckert, Daniel Frank"
+  },
+  {
+    "datum": "2022-12-21",
+    "status": "Ausgefallen",
+    "gastgeber": "-",
+    "ort": "-",
+    "anmerkungen": ""
+  },
+  {
+    "datum": "2023-01-04",
+    "status": "Stattgefunden", "gastgeber": "Daniel Frank",
+    "ort": "Oerlinghausen",
+    "anmerkungen": "Verschoben auf 20:00 Uhr; Peter fehlte."
+  },
+  {
+    "datum": "2023-01-11",
+    "status": "Stattgefunden", "gastgeber": "Peter Eckert",
+    "ort": "Bei Peter Eckert",
+    "anmerkungen": "Dabei: Peter Eckert, Daniel Frank, Andreas Nickel, Al Ex"
+  },
+  {
+    "datum": "2023-01-16",
+    "status": "Geburtstag",
+    "gastgeber": "Daniel Frank",
+    "ort": "Bei Daniel Frank",
+    "anmerkungen": "Dabei: Al Ex, Andreas Nickel, Peter Eckert, Daniel Frank"
+  },
+  {
+    "datum": "2023-01-18",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Peter Eckert, Daniel Frank, Al Ex, Andreas Nickel"
+  },
+  {
+    "datum": "2023-02-01",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Andreas Nickel, Daniel Frank"
+  },
+  {
+    "datum": "2023-02-08",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Andreas Nickel, Daniel Frank, Peter Eckert, Al Ex"
+  },
+  {
+    "datum": "2023-02-15",
+    "status": "Stattgefunden", "gastgeber": "Daniel Frank",
+    "ort": "Bei Daniel Frank",
+    "anmerkungen": "Dabei: Daniel Frank, Al Ex"
+  },
+  {
+    "datum": "2023-02-22",
+    "status": "Stattgefunden", "gastgeber": "Peter Eckert",
+    "ort": "Fritz-Reuter-Str. 36",
+    "anmerkungen": "Reguläres Treffen. | Dabei: Al Ex, Peter Eckert"
+  },
+  {
+    "datum": "2023-03-01",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Andreas Nickel, Daniel Frank"
+  },
+  {
+    "datum": "2023-03-08",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Dirschauer Straße 33a",
+    "anmerkungen": "Treffen nur Andreas und Alex; Peter fehlte."
+  },
+  {
+    "datum": "2023-03-15",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Andreas Nickel, Peter Eckert, Daniel Frank, Al Ex"
+  },
+  {
+    "datum": "2023-03-29",
+    "status": "Stattgefunden", "gastgeber": "Peter Eckert",
+    "ort": "Fritz-Reuter-Str. 36",
+    "anmerkungen": "Reguläres Treffen. | Dabei: Al Ex, Peter Eckert, Andreas Nickel, Daniel Frank"
+  },
+  {
+    "datum": "2023-04-05",
+    "status": "Ausgefallen",
+    "gastgeber": "-",
+    "ort": "-",
+    "anmerkungen": ""
+  },
+  {
+    "datum": "2023-04-12",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Peter Eckert, Andreas Nickel"
+  },
+  {
+    "datum": "2023-04-26",
+    "status": "Stattgefunden", "gastgeber": "Daniel Frank",
+    "ort": "Bei Daniel Frank",
+    "anmerkungen": "Dabei: Al Ex, Peter Eckert, Daniel Frank, Andreas Nickel"
+  },
+  {
+    "datum": "2023-05-03",
+    "status": "Stattgefunden", "gastgeber": "Peter Eckert",
+    "ort": "Bei Peter Eckert",
+    "anmerkungen": "Dabei: Peter Eckert, Al Ex, Andreas Nickel"
+  },
+  {
+    "datum": "2023-05-06",
+    "status": "Ausgefallen",
+    "gastgeber": "-",
+    "ort": "-",
+    "anmerkungen": ""
+  },
+  {
+    "datum": "2023-05-10",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Peter Eckert, Daniel Frank"
+  },
+  {
+    "datum": "2023-05-17",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Andreas Nickel, Peter Eckert, Daniel Frank, Al Ex"
+  },
+  {
+    "datum": "2023-05-24",
+    "status": "Stattgefunden", "gastgeber": "Peter Eckert",
+    "ort": "Bei Peter Eckert",
+    "anmerkungen": "Dabei: Peter Eckert, Al Ex, Andreas Nickel"
+  },
+  {
+    "datum": "2023-05-31",
+    "status": "Stattgefunden", "gastgeber": "Peter Eckert",
+    "ort": "Bei Peter Eckert",
+    "anmerkungen": "Dabei: Al Ex, Peter Eckert, Andreas Nickel"
+  },
+  {
+    "datum": "2023-06-07",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Andreas Nickel, Daniel Frank"
+  },
+  {
+    "datum": "2023-06-14",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Andreas Nickel"
+  },
+  {
+    "datum": "2023-06-21",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Andreas Nickel, Peter Eckert, Daniel Frank, Al Ex"
+  },
+  {
+    "datum": "2023-07-12",
+    "status": "Stattgefunden", "gastgeber": "Daniel Frank",
+    "ort": "Oerlinghausen",
+    "anmerkungen": "Hauskreis bei Daniel. | Dabei: Al Ex, Andreas Nickel, Daniel Frank"
+  },
+  {
+    "datum": "2023-08-02",
+    "status": "Stattgefunden", "gastgeber": "Peter Eckert",
+    "ort": "Bei Peter Eckert",
+    "anmerkungen": "Dabei: Al Ex, Peter Eckert"
+  },
+  {
+    "datum": "2023-08-09",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Daniel Frank, Peter Eckert"
+  },
+  {
+    "datum": "2023-08-16",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Andreas Nickel, Peter Eckert, Daniel Frank, Al Ex"
+  },
+  {
+    "datum": "2023-08-18",
+    "status": "Geburtstag",
+    "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Geburtstagsfeier Alex ab 19:00 Uhr."
+  },
+  {
+    "datum": "2023-08-23",
+    "status": "Stattgefunden", "gastgeber": "Daniel Frank",
+    "ort": "Bei Daniel Frank",
+    "anmerkungen": "Dabei: Daniel Frank, Peter Eckert, Al Ex"
+  },
+  {
+    "datum": "2023-08-30",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Peter Eckert, Andreas Nickel, Daniel Frank"
+  },
+  {
+    "datum": "2023-09-06",
+    "status": "Stattgefunden", "gastgeber": "Peter Eckert",
+    "ort": "Bei Peter Eckert",
+    "anmerkungen": "Dabei: Peter Eckert, Al Ex, Andreas Nickel"
+  },
+  {
+    "datum": "2023-09-13",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Andreas Nickel, Al Ex, Peter Eckert, Daniel Frank"
+  },
+  {
+    "datum": "2023-09-27",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Peter Eckert, Andreas Nickel"
+  },
+  {
+    "datum": "2023-10-04",
+    "status": "Ausgefallen",
+    "gastgeber": "-",
+    "ort": "-",
+    "anmerkungen": ""
+  },
+  {
+    "datum": "2023-10-11",
+    "status": "Stattgefunden", "gastgeber": "Peter Eckert",
+    "ort": "Bei Peter Eckert",
+    "anmerkungen": "Dabei: Al Ex, Andreas Nickel, Peter Eckert"
+  },
+  {
+    "datum": "2023-10-18",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Al Ex, Peter Eckert, Andreas Nickel, Daniel Frank"
+  },
+  {
+    "datum": "2023-10-25",
+    "status": "Stattgefunden", "gastgeber": "Peter Eckert",
+    "ort": "Fritz-Reuter-Str. 36",
+    "anmerkungen": "Spontanes Pizza-Essen."
+  },
+  {
+    "datum": "2023-11-01",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Andreas Nickel, Peter Eckert"
+  },
+  {
+    "datum": "2023-11-08",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Andreas Nickel, Al Ex, Peter Eckert"
+  },
+  {
+    "datum": "2023-11-15",
+    "status": "Stattgefunden", "gastgeber": "Daniel Frank",
+    "ort": "Bei Daniel Frank",
+    "anmerkungen": "Dabei: Daniel Frank, Al Ex, Andreas Nickel, Peter Eckert"
+  },
+  {
+    "datum": "2023-11-29",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Andreas Nickel, Peter Eckert"
+  },
+  {
+    "datum": "2023-12-06",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Dirschauer Straße 33a",
+    "anmerkungen": "Reguläres Treffen. | Dabei: Andreas Nickel, Al Ex, Peter Eckert, Daniel Frank"
+  },
+  {
+    "datum": "2023-12-13",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Peter Eckert, Andreas Nickel"
+  },
+  {
+    "datum": "2023-12-20",
+    "status": "Stattgefunden", "gastgeber": "Daniel Frank",
+    "ort": "Bei Daniel Frank",
+    "anmerkungen": "Dabei: Peter Eckert, Andreas Nickel, Al Ex, Daniel Frank"
+  },
+  {
+    "datum": "2023-12-27",
+    "status": "Stattgefunden", "gastgeber": "Eduard Günter",
+    "ort": "Bei Eduard Günter",
+    "anmerkungen": "Dabei: Al Ex, Eduard Günter, Peter Eckert, Andreas Nickel"
+  },
+  {
+    "datum": "2024-01-03",
+    "status": "Stattgefunden",
+    "gastgeber": "Daniel Frank",
+    "ort": "Bei Daniel Frank",
+    "anmerkungen": "Dabei: Daniel Frank, Eduard Günter, Peter Eckert, Andreas Nickel, Al Ex"
+  },
+  {
+    "datum": "2024-01-10",
+    "status": "Stattgefunden", "gastgeber": "Daniel Frank",
+    "ort": "Bei Eduard (Eddy)",
+    "anmerkungen": "Erstes Treffen im neuen Jahr. | Dabei: Daniel Frank, Andreas Nickel, Eduard Günter, Al Ex, Peter Eckert"
+  },
+  {
+    "datum": "2024-01-17",
+    "status": "Stattgefunden", "gastgeber": "Eduard Günter",
+    "ort": "Bei Eduard Günter",
+    "anmerkungen": "Dabei: Eduard Günter, Al Ex, Andreas Nickel"
+  },
+  {
+    "datum": "2024-01-23",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Al Ex, Andreas Nickel, Eduard Günter"
+  },
+  {
+    "datum": "2024-01-24",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Peter Eckert, Al Ex, Andreas Nickel, Daniel Frank, Eduard Günter"
+  },
+  {
+    "datum": "2024-01-31",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Andreas Nickel, Al Ex, Eduard Günter"
+  },
+  {
+    "datum": "2024-02-07",
+    "status": "Stattgefunden", "gastgeber": "Daniel Frank",
+    "ort": "Oerlinghausen",
+    "anmerkungen": "Pelimeni-Essen bei Daniel. | Dabei: Daniel Frank, Andreas Nickel, Eduard Günter, Al Ex"
+  },
+  {
+    "datum": "2024-02-14",
+    "status": "Stattgefunden", "gastgeber": "Eduard Günter",
+    "ort": "Bei Eduard Günter",
+    "anmerkungen": "Dabei: Eduard Günter, Al Ex, Andreas Nickel"
+  },
+  {
+    "datum": "2024-02-21",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Andreas Nickel, Eduard Günter, Al Ex"
+  },
+  {
+    "datum": "2024-02-28",
+    "status": "Ausgefallen",
+    "gastgeber": "-",
+    "ort": "-",
+    "anmerkungen": ""
+  },
+  {
+    "datum": "2024-03-06",
+    "status": "Ausgefallen",
+    "gastgeber": "-",
+    "ort": "-",
+    "anmerkungen": ""
+  },
+  {
+    "datum": "2024-03-13",
+    "status": "Stattgefunden", "gastgeber": "Eduard Günter",
+    "ort": "Bei Eddy",
+    "anmerkungen": "Daniel fehlte wegen Spätschicht. | Dabei: Eduard Günter, Daniel Frank, Al Ex, Andreas Nickel, Peter Eckert"
+  },
+  {
+    "datum": "2024-03-20",
+    "status": "Stattgefunden", "gastgeber": "Peter Eckert",
+    "ort": "Fritz-Reuter-Str. 36",
+    "anmerkungen": "Reguläres Treffen. | Dabei: Al Ex, Peter Eckert, Eduard Günter"
+  },
+  {
+    "datum": "2024-03-27",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Peter Eckert, Andreas Nickel"
+  },
+  {
+    "datum": "2024-04-03",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Al Ex, Andreas Nickel, Peter Eckert, Eduard Günter"
+  },
+  {
+    "datum": "2024-04-10",
+    "status": "Stattgefunden", "gastgeber": "Daniel Frank",
+    "ort": "Bei Daniel Frank",
+    "anmerkungen": "Dabei: Daniel Frank, Peter Eckert, Al Ex, Andreas Nickel"
+  },
+  {
+    "datum": "2024-04-17",
+    "status": "Stattgefunden", "gastgeber": "Eduard Günter",
+    "ort": "Bei Eduard Günter",
+    "anmerkungen": "Dabei: Eduard Günter, Peter Eckert, Al Ex, Andreas Nickel"
+  },
+  {
+    "datum": "2024-04-24",
+    "status": "Ausgefallen",
+    "gastgeber": "-",
+    "ort": "-",
+    "anmerkungen": ""
+  },
+  {
+    "datum": "2024-05-01",
+    "status": "Ausgefallen",
+    "gastgeber": "-",
+    "ort": "-",
+    "anmerkungen": ""
+  },
+  {
+    "datum": "2024-05-07",
+    "status": "Stattgefunden",
+    "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Andreas Nickel"
+  },
+  {
+    "datum": "2024-05-08",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Bestätigt durch Alex. | Dabei: Peter Eckert, Al Ex, Andreas Nickel"
+  },
+  {
+    "datum": "2024-05-15",
+    "status": "Stattgefunden", "gastgeber": "Peter Eckert",
+    "ort": "Fritz-Reuter-Str. 36",
+    "anmerkungen": "Andreas fehlte krankheitsbedingt. | Dabei: Al Ex, Eduard Günter, Peter Eckert"
+  },
+  {
+    "datum": "2024-05-22",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Andreas Nickel, Al Ex, Peter Eckert"
+  },
+  {
+    "datum": "2024-05-29",
+    "status": "Stattgefunden", "gastgeber": "Eduard Günter",
+    "ort": "Bei Eduard Günter",
+    "anmerkungen": "Dabei: Al Ex, Eduard Günter, Andreas Nickel, Peter Eckert"
+  },
+  {
+    "datum": "2024-06-05",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Eingesprungen für Daniel. | Dabei: Al Ex, Andreas Nickel, Daniel Frank, Peter Eckert"
+  },
+  {
+    "datum": "2024-06-19",
+    "status": "Ausgefallen",
+    "gastgeber": "-",
+    "ort": "-",
+    "anmerkungen": ""
+  },
+  {
+    "datum": "2024-06-26",
+    "status": "Stattgefunden", "gastgeber": "Peter Eckert",
+    "ort": "Bei Peter Eckert",
+    "anmerkungen": "Dabei: Peter Eckert, Al Ex, Eduard Günter, Andreas Nickel"
+  },
+  {
+    "datum": "2024-07-10",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Peter Eckert, Al Ex, Andreas Nickel"
+  },
+  {
+    "datum": "2024-07-17",
+    "status": "Stattgefunden", "gastgeber": "Daniel Frank",
+    "ort": "Bei Daniel Frank",
+    "anmerkungen": "Dabei: Al Ex, Andreas Nickel, Daniel Frank, Peter Eckert"
+  },
+  {
+    "datum": "2024-07-24",
+    "status": "Stattgefunden", "gastgeber": "Daniel Frank",
+    "ort": "Bei Daniel Frank",
+    "anmerkungen": "Dabei: Al Ex, Peter Eckert, Eduard Günter, Daniel Frank"
+  },
+  {
+    "datum": "2024-07-31",
+    "status": "Ausgefallen",
+    "gastgeber": "-",
+    "ort": "-",
+    "anmerkungen": ""
+  },
+  {
+    "datum": "2024-08-07",
+    "status": "Ausgefallen",
+    "gastgeber": "-",
+    "ort": "-",
+    "anmerkungen": ""
+  },
+  {
+    "datum": "2024-08-13",
+    "status": "Stattgefunden", "gastgeber": "Eduard Günter",
+    "ort": "Bei Eduard Günter",
+    "anmerkungen": "Dabei: Eduard Günter, Andreas Nickel, Al Ex, Daniel Frank, Peter Eckert"
+  },
+  {
+    "datum": "2024-08-14",
+    "status": "Stattgefunden", "gastgeber": "Eduard Günter",
+    "ort": "Bei Eddy",
+    "anmerkungen": "Thema wurde von Peter vorbereitet."
+  },
+  {
+    "datum": "2024-08-20",
+    "status": "Geburtstag",
+    "gastgeber": "?",
+    "ort": "?",
+    "anmerkungen": ""
+  },
+  {
+    "datum": "2024-08-21",
+    "status": "Geburtstag",
+    "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Andreas Nickel, Daniel Frank, Eduard Günter, Peter Eckert"
+  },
+  {
+    "datum": "2024-08-28",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Andreas Nickel, Eduard Günter, Peter Eckert, Al Ex"
+  },
+  {
+    "datum": "2024-09-18",
+    "status": "Stattgefunden", "gastgeber": "Daniel Frank",
+    "ort": "Schrebergarten / Oerlinghausen",
+    "anmerkungen": "Grillen im Garten mit Familien. | Dabei: Daniel Frank, Andreas Nickel, Al Ex, Eduard Günter, Peter Eckert"
+  },
+  {
+    "datum": "2024-09-25",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Daniel und Eddy fehlten."
+  },
+  {
+    "datum": "2024-10-30",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Al Ex, Peter Eckert, Andreas Nickel"
+  },
+  {
+    "datum": "2024-11-13",
+    "status": "Stattgefunden", "gastgeber": "Daniel Frank",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Peter fehlte wegen Magen-Darm-Infekt. | Dabei: Peter Eckert, Al Ex, Daniel Frank, Andreas Nickel"
+  },
+  {
+    "datum": "2024-11-20",
+    "status": "Ausgefallen",
+    "gastgeber": "-",
+    "ort": "-",
+    "anmerkungen": ""
+  },
+  {
+    "datum": "2024-11-27",
+    "status": "Ausgefallen",
+    "gastgeber": "-",
+    "ort": "-",
+    "anmerkungen": "Gemäß alter Liste war hier ursprünglich ein Raclette-Essen geplant."
+  },
+  {
+    "datum": "2024-12-04",
+    "status": "Geburtstag",
+    "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Al Ex, Andreas Nickel, Daniel Frank, Eduard Günter, Peter Eckert"
+  },
+  {
+    "datum": "2024-12-11",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Al Ex, Andreas Nickel, Peter Eckert"
+  },
+  {
+    "datum": "2024-12-18",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Andreas Nickel, Al Ex, Peter Eckert"
+  },
+  {
+    "datum": "2025-01-08",
+    "status": "Stattgefunden",
+    "gastgeber": "Eduard Günter",
+    "ort": "Bei Eduard Günter",
+    "anmerkungen": "Dabei: Peter Eckert, Eduard Günter, Andreas Nickel, Al Ex"
+  },
+  {
+    "datum": "2025-01-15",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Andreas Nickel, Peter Eckert"
+  },
+  {
+    "datum": "2025-01-22",
+    "status": "Stattgefunden", "gastgeber": "Peter Eckert",
+    "ort": "Bei Peter Eckert",
+    "anmerkungen": "Dabei: Peter Eckert, Andreas Nickel, Al Ex"
+  },
+  {
+    "datum": "2025-02-05",
+    "status": "Geburtstag",
+    "gastgeber": "Daniel Frank",
+    "ort": "Bei Daniel Frank",
+    "anmerkungen": "Dabei: Daniel Frank, Andreas Nickel, Peter Eckert, Eduard Günter"
+  },
+  {
+    "datum": "2025-02-12",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Al Ex, Daniel Frank, Andreas Nickel"
+  },
+  {
+    "datum": "2025-02-19",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Andreas Nickel, Peter Eckert"
+  },
+  {
+    "datum": "2025-02-26",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Fritz-Reuter-Str. 36",
+    "anmerkungen": "Pizza-Abend geplant. | Dabei: Eduard Günter, Peter Eckert, Andreas Nickel, Al Ex"
+  },
+  {
+    "datum": "2025-03-05",
+    "status": "Stattgefunden", "gastgeber": "Eduard Günter",
+    "ort": "Bei Eduard Günter",
+    "anmerkungen": "Dabei: Eduard Günter, Peter Eckert, Andreas Nickel, Al Ex"
+  },
+  {
+    "datum": "2025-03-12",
+    "status": "Stattgefunden", "gastgeber": "Daniel Frank",
+    "ort": "Oerlinghausen",
+    "anmerkungen": "Beginn um 20:00 Uhr wegen Daniels Spätschicht. | Dabei: Andreas Nickel, Daniel Frank, Peter Eckert, Al Ex"
+  },
+  {
+    "datum": "2025-03-19",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Andreas Nickel, Al Ex"
+  },
+  {
+    "datum": "2025-03-26",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Eduard Günter, Peter Eckert, Andreas Nickel"
+  },
+  {
+    "datum": "2025-04-02",
+    "status": "Stattgefunden", "gastgeber": "Peter Eckert",
+    "ort": "Bei Peter Eckert",
+    "anmerkungen": "Dabei: Peter Eckert, Al Ex, Daniel Frank"
+  },
+  {
+    "datum": "2025-04-09",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Dirschauer Straße 33a",
+    "anmerkungen": "Eddy und Daniel fehlten krankheitsbedingt/beruflich. | Dabei: Peter Eckert, Al Ex, Andreas Nickel"
+  },
+  {
+    "datum": "2025-04-16",
+    "status": "Stattgefunden", "gastgeber": "Eduard Günter",
+    "ort": "Bei Eduard Günter",
+    "anmerkungen": "Dabei: Al Ex, Eduard Günter, Peter Eckert, Andreas Nickel"
+  },
+  {
+    "datum": "2025-04-30",
+    "status": "Ausgefallen",
+    "gastgeber": "-",
+    "ort": "-",
+    "anmerkungen": ""
+  },
+  {
+    "datum": "2025-05-07",
+    "status": "Ausgefallen",
+    "gastgeber": "-",
+    "ort": "-",
+    "anmerkungen": ""
+  },
+  {
+    "datum": "2025-05-14",
+    "status": "Ausgefallen",
+    "gastgeber": "-",
+    "ort": "-",
+    "anmerkungen": ""
+  },
+  {
+    "datum": "2025-05-21",
+    "status": "Stattgefunden", "gastgeber": "Daniel Frank",
+    "ort": "Bei Daniel Frank",
+    "anmerkungen": "Dabei: Daniel Frank, Andreas Nickel, Peter Eckert, Al Ex"
+  },
+  {
+    "datum": "2025-05-28",
+    "status": "Stattgefunden", "gastgeber": "Peter Eckert",
+    "ort": "Bei Peter Eckert",
+    "anmerkungen": "Dabei: Peter Eckert, Al Ex, Andreas Nickel, Eduard Günter"
+  },
+  {
+    "datum": "2025-06-04",
+    "status": "Ausgefallen",
+    "gastgeber": "-",
+    "ort": "-",
+    "anmerkungen": ""
+  },
+  {
+    "datum": "2025-06-11",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Andreas Nickel, Al Ex, Eduard Günter"
+  },
+  {
+    "datum": "2025-06-18",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Peter Eckert, Andreas Nickel, Daniel Frank"
+  },
+  {
+    "datum": "2025-06-25",
+    "status": "Stattgefunden",
+    "gastgeber": "?",
+    "ort": "?",
+    "anmerkungen": "Dabei: Peter Eckert, Andreas Nickel, Al Ex"
+  },
+  {
+    "datum": "2025-07-02",
+    "status": "Geburtstag",
+    "gastgeber": "Peter Eckert",
+    "ort": "Bei Peter Eckert",
+    "anmerkungen": "Dabei: Al Ex, Andreas Nickel, Daniel Frank, Eduard Günter, Peter Eckert"
+  },
+  {
+    "datum": "2025-07-16",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Al Ex, Andreas Nickel"
+  },
+  {
+    "datum": "2025-07-29",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Andreas Nickel"
+  },
+  {
+    "datum": "2025-07-30",
+    "status": "Stattgefunden", "gastgeber": "Daniel Frank",
+    "ort": "Stettiner Straße 18, Stieghorst",
+    "anmerkungen": "Hauskreis bei Daniel nach erneutem Umzug."
+  },
+  {
+    "datum": "2025-08-06",
+    "status": "Geburtstag",
+    "gastgeber": "Eduard Günter",
+    "ort": "Bei Eduard Günter",
+    "anmerkungen": "Dabei: Peter Eckert, Al Ex, Eduard Günter, Andreas Nickel, Daniel Frank"
+  },
+  {
+    "datum": "2025-08-13",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Peter Eckert"
+  },
+  {
+    "datum": "2025-08-20",
+    "status": "Geburtstag",
+    "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Andreas Nickel, Daniel Frank, Eduard Günter, Peter Eckert"
+  },
+  {
+    "datum": "2025-09-10",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Andreas Nickel"
+  },
+  {
+    "datum": "2025-09-17",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Andreas Nickel, Peter Eckert"
+  },
+  {
+    "datum": "2025-09-23",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Andreas Nickel"
+  },
+  {
+    "datum": "2025-10-01",
+    "status": "Stattgefunden", "gastgeber": "Eduard Günter",
+    "ort": "Bei Eduard Günter",
+    "anmerkungen": "Dabei: Al Ex, Eduard Günter, Peter Eckert, Andreas Nickel"
+  },
+  {
+    "datum": "2025-10-08",
+    "status": "Stattgefunden",
+    "gastgeber": "Peter Eckert",
+    "ort": "Bei Peter Eckert",
+    "anmerkungen": "Dabei: Andreas Nickel, Peter Eckert, Eduard Günter, Al Ex"
+  },
+  {
+    "datum": "2025-10-15",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Andreas Nickel, Peter Eckert, Al Ex"
+  },
+  {
+    "datum": "2025-10-22",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Peter Eckert, Andreas Nickel"
+  },
+  {
+    "datum": "2025-10-29",
+    "status": "Stattgefunden", "gastgeber": "Daniel Frank",
+    "ort": "Bei Daniel Frank",
+    "anmerkungen": "Dabei: Daniel Frank, Peter Eckert, Andreas Nickel, Al Ex"
+  },
+  {
+    "datum": "2025-11-05",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Andreas und Peter waren dabei. | Dabei: Andreas Nickel, Al Ex, Peter Eckert"
+  },
+  {
+    "datum": "2025-11-12",
+    "status": "Ausgefallen",
+    "gastgeber": "-",
+    "ort": "-",
+    "anmerkungen": ""
+  },
+  {
+    "datum": "2025-11-19",
+    "status": "Stattgefunden", "gastgeber": "Peter Eckert",
+    "ort": "Fritz-Reuter-Str. 36",
+    "anmerkungen": "Treffen mit Alex und Andreas; Daniel fehlte. | Dabei: Al Ex, Peter Eckert, Eduard Günter, Andreas Nickel"
+  },
+  {
+    "datum": "2025-11-26",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Peter Eckert, Andreas Nickel"
+  },
+  {
+    "datum": "2025-12-17",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Al Ex, Andreas Nickel, Peter Eckert"
+  },
+  {
+    "datum": "2026-01-07",
+    "status": "Stattgefunden", "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Al Ex, Andreas Nickel, Eduard Günter, Peter Eckert"
+  },
+  {
+    "datum": "2026-01-14",
+    "status": "Stattgefunden",
+    "gastgeber": "Peter Eckert",
+    "ort": "Bei Peter Eckert",
+    "anmerkungen": "Dabei: Peter Eckert, Al Ex, Andreas Nickel, Eduard Günter"
+  },
+  {
+    "datum": "2026-01-21",
+    "status": "Ausgefallen",
+    "gastgeber": "-",
+    "ort": "-",
+    "anmerkungen": ""
+  },
+  {
+    "datum": "2026-01-28",
+    "status": "Geburtstag",
+    "gastgeber": "Daniel Frank",
+    "ort": "Daniels Wohnung",
+    "anmerkungen": "Geburtstagsfeier Daniel mit griechischem Essen (19:30 Uhr)."
+  },
+  {
+    "datum": "2026-02-04",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Peter Eckert, Andreas Nickel"
+  },
+  {
+    "datum": "2026-02-11",
+    "status": "Stattgefunden", "gastgeber": "Al Ex",
+    "ort": "Bei Al Ex",
+    "anmerkungen": "Dabei: Al Ex, Peter Eckert, Eduard Günter, Andreas Nickel"
+  },
+  {
+    "datum": "2026-02-18",
+    "status": "Stattgefunden", "gastgeber": "?",
+    "ort": "?",
+    "anmerkungen": "Dabei: Peter Eckert, Al Ex"
+  },
+  {
+    "datum": "2026-02-25",
+    "status": "Stattgefunden",
+    "gastgeber": "Andreas Nickel",
+    "ort": "Bei Andreas Nickel",
+    "anmerkungen": "Dabei: Andreas Nickel, Peter Eckert, Al Ex, Eduard Günter"
+  }
+]
+    </script>
+
+    <!-- HIER LIEGEN DIE MITGLIEDER: Die App liest das und speichert neue Einträge hier ab -->
+    <script id="hauskreis-members" type="application/json">
+[
+  "Al Ex",
+  "Andreas Nickel",
+  "Daniel Frank",
+  "Eduard Günter",
+  "Peter Eckert"
+]
+    </script>
+</head>
+<body class="bg-gray-100 font-sans text-gray-900 overflow-y-scroll">
+    <div id="root"></div>
+
+    <!-- MAIN SCRIPT (Darf beim Generieren nicht gelöscht werden) -->
+    <script id="main-script" type="text/babel">
+        const { useState, useMemo, useEffect } = React;
+
+        function App() {
+          const [activeTab, setActiveTab] = useState('dashboard');
+          const [searchTerm, setSearchTerm] = useState('');
+          const [showAddModal, setShowAddModal] = useState(false);
+          
+          // Liest die Mitglieder zu Beginn aus
+          const initialMembers = useMemo(() => {
+              try {
+                  const text = document.getElementById('hauskreis-members').textContent;
+                  return JSON.parse(text);
+              } catch (e) {
+                  return ["Al Ex", "Andreas Nickel", "Daniel Frank", "Eduard Günter", "Peter Eckert"];
+              }
+          }, []);
+          const [members, setMembers] = useState(initialMembers);
+
+          // Liest die Daten zu Beginn aus dem HTML Tag aus
+          const initialData = useMemo(() => {
+              try {
+                  const text = document.getElementById('hauskreis-data').textContent;
+                  return JSON.parse(text);
+              } catch (e) {
+                  console.error("Konnte Daten nicht laden:", e);
+                  return [];
+              }
+          }, []);
+
+          const [appData, setAppData] = useState(initialData);
+
+          // Versuche Daten aus dem lokalen Browser-Speicher wiederherzustellen
+          useEffect(() => {
+              const savedData = localStorage.getItem('hauskreis_app_data');
+              if (savedData) {
+                  try {
+                      const parsed = JSON.parse(savedData);
+                      // FIX: Lade LocalStorage, auch wenn die Länge gleich ist (erhält Namensänderungen bei F5/Reload)
+                      if (parsed.length >= initialData.length) {
+                          setAppData(parsed);
+                      }
+                  } catch (e) {}
+              }
+              const savedMembers = localStorage.getItem('hauskreis_app_members');
+              if (savedMembers) {
+                  try {
+                      setMembers(JSON.parse(savedMembers));
+                  } catch (e) {}
+              }
+          }, [initialData]);
+
+          // Datums-Filter
+          const allDates = useMemo(() => appData.map(d => d.datum).sort(), [appData]);
+          const [startDate, setStartDate] = useState('');
+          const [endDate, setEndDate] = useState('');
+
+          useEffect(() => {
+              if (!startDate && allDates.length > 0) setStartDate(allDates[0]);
+              if (!endDate && allDates.length > 0) setEndDate(allDates[allDates.length - 1]);
+          }, [allDates, startDate, endDate]);
+
+          const normalizeName = (name) => {
+            if (!name) return "";
+            return name.trim();
+          };
+
+          const dataInDateRange = useMemo(() => {
+              return appData.filter(item => item.datum >= startDate && item.datum <= endDate);
+          }, [startDate, endDate, appData]);
+
+          const stats = useMemo(() => {
+            let total = dataInDateRange.length;
+            let stattgefunden = 0;
+            let ausgefallen = 0;
+            let geburtstage = 0;
+            
+            const hosts = {};
+            const attendance = {};
+            const years = {};
+            
+            const allNamesSet = new Set(members);
+            const timelineEvents = [];
+
+            dataInDateRange.forEach(item => {
+              if (item.status === 'Stattgefunden') stattgefunden++;
+              if (item.status === 'Ausgefallen') ausgefallen++;
+              if (item.status === 'Geburtstag') geburtstage++;
+
+              const year = item.datum.substring(0, 4);
+              if (!years[year]) years[year] = 0;
+              if (item.status !== 'Ausgefallen') years[year]++;
+
+              let parsedHosts = [];
+              if (item.status !== 'Ausgefallen' && item.gastgeber && item.gastgeber !== '-' && item.gastgeber !== '?') {
+                const splitHosts = item.gastgeber.split(' / ');
+                splitHosts.forEach(h => {
+                    const hClean = normalizeName(h);
+                    if (hClean !== 'Restaurant') {
+                        if (!hosts[hClean]) hosts[hClean] = 0;
+                        hosts[hClean]++;
+                        parsedHosts.push(hClean);
+                        allNamesSet.add(hClean);
+                    }
+                });
+              }
+
+              let parsedAttendees = [];
+              if (item.anmerkungen && item.anmerkungen.includes('Dabei:')) {
+                  const dabeiStr = item.anmerkungen.split('Dabei:')[1];
+                  if (dabeiStr) {
+                      const people = dabeiStr.split(',').map(p => normalizeName(p)).filter(p => p);
+                      people.forEach(pClean => {
+                          if (!attendance[pClean]) attendance[pClean] = 0;
+                          attendance[pClean]++;
+                          parsedAttendees.push(pClean);
+                          allNamesSet.add(pClean);
+                      });
+                  }
+              }
+
+              timelineEvents.push({ ...item, parsedHosts, parsedAttendees });
+            });
+
+            const sortedHosts = Object.entries(hosts).sort((a, b) => b[1] - a[1]);
+            const sortedAttendance = Object.entries(attendance).sort((a, b) => b[1] - a[1]);
+            const sortedYears = Object.entries(years).sort((a, b) => a[0].localeCompare(b[0]));
+            const matrixNames = Array.from(allNamesSet).filter(n => n !== 'Restaurant').sort();
+
+            return { total, stattgefunden, ausgefallen, geburtstage, sortedHosts, sortedAttendance, sortedYears, timelineEvents, matrixNames };
+          }, [dataInDateRange, members]);
+
+          // CSV Export Funktion
+          const exportCSV = () => {
+              const headers = ["Datum", "Status", "Gastgeber", "Ort", "Anmerkungen"];
+              const rows = appData.map(item => [
+                  item.datum,
+                  item.status,
+                  item.gastgeber,
+                  item.ort,
+                  `"${(item.anmerkungen || '').replace(/"/g, '""')}"`
+              ]);
+              const csvContent = [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
+              
+              const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `hauskreis_export_${new Date().toISOString().substring(0, 10)}.csv`;
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              URL.revokeObjectURL(url);
+          };
+
+          // ECHTES SPEICHERN ALS NEUE HTML DATEI Oder überschreiben
+          const saveHTMLFile = async () => {
+              // 1. Gesamte Webseite kopieren
+              const clone = document.documentElement.cloneNode(true);
+              
+              // 2. Leere den React Container aus
+              const rootNode = clone.querySelector('#root');
+              if (rootNode) rootNode.innerHTML = '';
+              
+              // 3. Lösche alle Injected-Styles
+              const styles = clone.querySelectorAll('style');
+              styles.forEach(s => {
+                  if (s.id !== 'custom-styles') s.remove();
+              });
+              
+              // 4. Lösche temporäre Skripte
+              const scripts = clone.querySelectorAll('script');
+              scripts.forEach(s => {
+                  const isSrc = s.hasAttribute('src');
+                  const isMain = s.id === 'main-script';
+                  const isData = s.id === 'hauskreis-data';
+                  const isMembers = s.id === 'hauskreis-members';
+                  if (!isSrc && !isMain && !isData && !isMembers) {
+                      s.remove();
+                  }
+              });
+
+              // 5. Füge die NEUEN Daten in den Daten-Block ein
+              const dataBlock = clone.querySelector('#hauskreis-data');
+              if (dataBlock) {
+                  dataBlock.textContent = "\n" + JSON.stringify(appData, null, 2) + "\n";
+              }
+              const memberBlock = clone.querySelector('#hauskreis-members');
+              if (memberBlock) {
+                  memberBlock.textContent = "\n" + JSON.stringify(members, null, 2) + "\n";
+              }
+
+              // 6. Setze das HTML zusammen
+              const finalHtml = "<!DOCTYPE html>\n" + clone.outerHTML;
+
+              // 7. Versuche auf Desktop die Datei direkt zu überschreiben
+              if (window.showSaveFilePicker) {
+                  try {
+                      const fileHandle = await window.showSaveFilePicker({
+                          suggestedName: 'hauskreis.html',
+                          types: [{
+                              description: 'HTML Dokument',
+                              accept: { 'text/html': ['.html'] },
+                          }],
+                      });
+                      const writable = await fileHandle.createWritable();
+                      await writable.write(finalHtml);
+                      await writable.close();
+                      alert("Erfolgreich gespeichert! Die Datei wurde direkt überschrieben.");
+                      return; // Abbruch hier, da erfolgreich!
+                  } catch (err) {
+                      // Wenn der User abbricht, machen wir nichts. Ansonsten Fallback.
+                      if (err.name === 'AbortError') return;
+                  }
+              }
+
+              // 8. Fallback für Safari & iPhone (Neuer Download)
+              const blob = new Blob([finalHtml], { type: 'text/html;charset=utf-8' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `hauskreis.html`; 
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              URL.revokeObjectURL(url);
+              
+              alert("Hinweis für Safari/iPhone:\n\nDer Browser hat soeben eine Kopie heruntergeladen. Das Überschreiben alter Dateien erlaubt Apple leider nicht automatisch.\n\nTausche die alte Datei in Telegram einfach gegen diese Neue aus!");
+          };
+
+          // Hinzufügen-Formular
+          const AddModal = () => {
+              const [newDate, setNewDate] = useState(new Date().toISOString().substring(0, 10));
+              const [newStatus, setNewStatus] = useState('Stattgefunden');
+              const [newHost, setNewHost] = useState('');
+              const [newNotes, setNewNotes] = useState('');
+              const [newDabei, setNewDabei] = useState([]);
+
+              const toggleDabei = (name) => {
+                  setNewDabei(prev => prev.includes(name) ? prev.filter(n => n !== name) : [...prev, name]);
+              };
+
+              const doAdd = () => {
+                  let finalAnmerkungen = newNotes;
+                  if (newStatus !== 'Ausgefallen' && newDabei.length > 0) {
+                      finalAnmerkungen += (finalAnmerkungen ? " | " : "") + "Dabei: " + newDabei.join(", ");
+                  }
+                  
+                  const newItem = {
+                      datum: newDate,
+                      status: newStatus,
+                      gastgeber: newStatus === 'Ausgefallen' ? '-' : (newHost || '?'),
+                      ort: newStatus === 'Ausgefallen' ? '-' : (newHost ? `Bei ${newHost}` : '?'),
+                      anmerkungen: finalAnmerkungen
+                  };
+                  
+                  setAppData(prev => {
+                      const updated = [...prev, newItem];
+                      const sorted = updated.sort((a, b) => new Date(a.datum) - new Date(b.datum));
+                      localStorage.setItem('hauskreis_app_data', JSON.stringify(sorted));
+                      return sorted;
+                  });
+                  
+                  setShowAddModal(false);
+              };
+
+              return (
+                  <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] p-4">
+                      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in duration-300">
+                          <div className="p-4 border-b bg-indigo-50 flex justify-between items-center">
+                              <h3 className="font-bold text-lg text-indigo-900">Neuen Termin eintragen</h3>
+                              <button onClick={() => setShowAddModal(false)} className="text-indigo-400 hover:text-indigo-700 transition">
+                                  <i className="fa-solid fa-xmark text-xl"></i>
+                              </button>
+                          </div>
+                          <div className="p-6 overflow-y-auto space-y-5 custom-scrollbar">
+                              <div>
+                                  <label className="block text-sm font-semibold text-gray-700 mb-1">Datum</label>
+                                  <input type="date" value={newDate} onChange={e => setNewDate(e.target.value)} className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 outline-none transition" />
+                              </div>
+                              <div>
+                                  <label className="block text-sm font-semibold text-gray-700 mb-1">Status</label>
+                                  <select value={newStatus} onChange={e => setNewStatus(e.target.value)} className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 outline-none transition">
+                                      <option value="Stattgefunden">Stattgefunden</option>
+                                      <option value="Ausgefallen">Ausgefallen</option>
+                                      <option value="Geburtstag">Geburtstag</option>
+                                  </select>
+                              </div>
+                              {newStatus !== 'Ausgefallen' && (
+                                  <div>
+                                      <label className="block text-sm font-semibold text-gray-700 mb-1">Wer ist Gastgeber?</label>
+                                      <select value={newHost} onChange={e => setNewHost(e.target.value)} className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 outline-none transition">
+                                          <option value="">- Bitte wählen -</option>
+                                          {members.map(n => <option key={n} value={n}>{n}</option>)}
+                                      </select>
+                                  </div>
+                              )}
+                              {newStatus !== 'Ausgefallen' && (
+                                  <div>
+                                      <label className="block text-sm font-semibold text-gray-700 mb-2">Wer war anwesend?</label>
+                                      <div className="flex flex-wrap gap-2">
+                                          {members.map(n => {
+                                              const isActive = newDabei.includes(n);
+                                              return (
+                                                  <button key={n} onClick={() => toggleDabei(n)} className={`px-4 py-2 rounded-lg border text-sm transition-colors ${isActive ? 'bg-green-100 border-green-300 text-green-800 font-semibold shadow-sm' : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'}`}>
+                                                      {n}
+                                                  </button>
+                                              );
+                                          })}
+                                      </div>
+                                  </div>
+                              )}
+                              <div>
+                                  <label className="block text-sm font-semibold text-gray-700 mb-1">Anmerkungen (Optional)</label>
+                                  <input type="text" value={newNotes} onChange={e => setNewNotes(e.target.value)} placeholder="Z.B. Pizza bestellt..." className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 outline-none transition" />
+                              </div>
+                          </div>
+                          <div className="p-4 border-t bg-gray-50 flex justify-end space-x-3">
+                              <button onClick={() => setShowAddModal(false)} className="px-5 py-2.5 rounded-xl text-gray-600 font-medium hover:bg-gray-200 transition-colors">Abbrechen</button>
+                              <button onClick={doAdd} className="px-5 py-2.5 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-700 shadow-sm transition-colors">
+                                <i className="fa-solid fa-plus mr-2"></i>Eintragen
+                              </button>
+                          </div>
+                      </div>
+                  </div>
+              );
+          };
+
+          const BarChartItem = ({ label, value, max, colorClass }) => {
+              const percentage = Math.max((value / max) * 100, 2);
+              return (
+                  <div className="mb-4">
+                      <div className="flex justify-between mb-1 text-sm font-medium text-gray-700">
+                          <span>{label}</span>
+                          <span>{value}x</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-3">
+                          <div className={`h-3 rounded-full ${colorClass}`} style={{ width: `${percentage}%` }}></div>
+                      </div>
+                  </div>
+              );
+          };
+
+          const LineChart = ({ data }) => {
+              if (!data || data.length === 0) return <div className="text-gray-500 text-sm py-4">Für diesen Zeitraum liegen keine Jahresdaten vor.</div>;
+              const svgWidth = 800; const svgHeight = 250; const paddingX = 60; const paddingY = 40;
+              const minCount = 0; const maxCount = Math.max(...data.map(d => d[1]), 10) + 5; 
+              const points = data.map((d, i) => {
+                const x = paddingX + (i * (svgWidth - 2 * paddingX)) / Math.max(data.length - 1, 1);
+                const y = svgHeight - paddingY - ((d[1] - minCount) / (maxCount - minCount)) * (svgHeight - 2 * paddingY);
+                return { x, y, value: d[1], label: d[0] };
+              });
+              const pathData = `M ${points.map(p => `${p.x},${p.y}`).join(' L ')}`;
+
+              return (
+                <div className="w-full overflow-x-auto bg-gray-50 rounded-xl border border-gray-100 mt-4">
+                  <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} className="w-full h-auto min-w-[500px]">
+                     <line x1={paddingX} y1={svgHeight - paddingY} x2={svgWidth - paddingX} y2={svgHeight - paddingY} stroke="#e5e7eb" strokeWidth="2" />
+                     <line x1={paddingX} y1={paddingY} x2={svgWidth - paddingX} y2={paddingY} stroke="#f3f4f6" strokeWidth="1" />
+                     {data.length > 1 && <path d={pathData} fill="none" stroke="#4f46e5" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />}
+                     {points.map((p, i) => (
+                        <g key={i}>
+                           <circle cx={p.x} cy={p.y} r="6" fill="#ffffff" stroke="#4f46e5" strokeWidth="3" />
+                           <text x={p.x} y={p.y - 15} textAnchor="middle" fontSize="16" fontWeight="bold" fill="#4f46e5">{p.value}x</text>
+                           <text x={p.x} y={svgHeight - 15} textAnchor="middle" fontSize="14" fontWeight="600" fill="#6b7280">{p.label}</text>
+                        </g>
+                     ))}
+                  </svg>
+                </div>
+              );
+          };
+
+          return (
+            <div className="min-h-screen font-sans pb-10">
+              {showAddModal && <AddModal />}
+              
+              {/* Navigation */}
+              <nav className="bg-indigo-700 text-white shadow-md sticky top-0 z-50">
+                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                  <div className="flex items-center justify-between h-16 overflow-x-auto">
+                    <div className="flex items-center space-x-3 shrink-0 mr-6">
+                      <i className="fa-solid fa-chart-pie text-indigo-300 text-2xl"></i>
+                      <span className="font-bold text-xl tracking-wide hidden sm:inline">Hauskreis Controlling</span>
+                    </div>
+                    <div className="flex items-center space-x-2 shrink-0">
+                      <button onClick={() => setActiveTab('dashboard')} className={`px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-2 ${activeTab === 'dashboard' ? 'bg-indigo-800 text-white' : 'text-indigo-200 hover:bg-indigo-600 hover:text-white'}`}>
+                        <i className="fa-solid fa-border-all text-lg"></i><span className="hidden md:inline">Dashboard</span>
+                      </button>
+                      <button onClick={() => setActiveTab('matrix')} className={`px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-2 ${activeTab === 'matrix' ? 'bg-indigo-800 text-white' : 'text-indigo-200 hover:bg-indigo-600 hover:text-white'}`}>
+                        <i className="fa-solid fa-table text-lg"></i><span className="hidden md:inline">Matrix</span>
+                      </button>
+                      <button onClick={() => setActiveTab('settings')} className={`px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-2 ${activeTab === 'settings' ? 'bg-indigo-800 text-white' : 'text-indigo-200 hover:bg-indigo-600 hover:text-white'}`}>
+                        <i className="fa-solid fa-gear text-lg"></i><span className="hidden md:inline">Einstellungen</span>
+                      </button>
+                      
+                      <div className="w-px h-6 bg-indigo-500 mx-2 hidden sm:block"></div>
+                      
+                      <button onClick={() => setShowAddModal(true)} className="bg-green-500 text-white px-3 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-green-600 transition flex items-center space-x-2">
+                        <i className="fa-solid fa-plus"></i><span className="hidden sm:inline">Eintragen</span>
+                      </button>
+                      
+                      <button onClick={saveHTMLFile} title="Speichere Änderungen als neue HTML-Datei ab!" className="bg-orange-500 text-white px-3 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-orange-600 transition flex items-center space-x-2 ml-2 relative group">
+                        <i className="fa-solid fa-download"></i>
+                        <span className="hidden sm:inline">Speichern</span>
+                        <span className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 w-max bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition">Datei überschreiben / sichern</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </nav>
+
+              {/* Filter */}
+              <div className="bg-white border-b border-gray-200 shadow-sm mb-6">
+                  <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center gap-6 text-sm">
+                      <div className="flex items-center space-x-2 text-indigo-600 font-semibold">
+                          <i className="fa-solid fa-filter"></i>
+                          <span>Zeitraum eingrenzen:</span>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-4">
+                          <div className="flex items-center space-x-2">
+                              <label className="text-gray-500 font-medium">Von:</label>
+                              <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="border border-gray-300 rounded-md px-3 py-1.5 outline-none text-gray-700 bg-gray-50" />
+                          </div>
+                          <div className="flex items-center space-x-2">
+                              <label className="text-gray-500 font-medium">Bis:</label>
+                              <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className="border border-gray-300 rounded-md px-3 py-1.5 outline-none text-gray-700 bg-gray-50" />
+                          </div>
+                      </div>
+                      <div className="ml-auto flex items-center space-x-2 text-indigo-800 bg-indigo-50 px-3 py-1 rounded-full font-bold text-xs">
+                          <i className="fa-solid fa-database"></i>
+                          <span>{appData.length} Termine geladen</span>
+                      </div>
+                  </div>
+              </div>
+
+              <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                {/* TAB: DASHBOARD */}
+                {activeTab === 'dashboard' && (
+                    <div className="space-y-8 duration-500">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex items-center space-x-4">
+                                <div className="p-3 bg-blue-100 text-blue-600 rounded-lg"><i className="fa-regular fa-calendar text-2xl"></i></div>
+                                <div><p className="text-sm font-medium text-gray-500">Gesamt geplant</p><p className="text-2xl font-bold text-gray-900">{stats.total}</p></div>
+                            </div>
+                            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex items-center space-x-4">
+                                <div className="p-3 bg-green-100 text-green-600 rounded-lg"><i className="fa-solid fa-user-check text-2xl"></i></div>
+                                <div><p className="text-sm font-medium text-gray-500">Stattgefunden</p><p className="text-2xl font-bold text-gray-900">{stats.stattgefunden}</p></div>
+                            </div>
+                            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex items-center space-x-4">
+                                <div className="p-3 bg-red-100 text-red-600 rounded-lg"><i className="fa-regular fa-circle-xmark text-2xl"></i></div>
+                                <div><p className="text-sm font-medium text-gray-500">Ausgefallen</p><p className="text-2xl font-bold text-gray-900">{stats.ausgefallen}</p></div>
+                            </div>
+                            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex items-center space-x-4">
+                                <div className="p-3 bg-purple-100 text-purple-600 rounded-lg"><i className="fa-solid fa-cake-candles text-2xl"></i></div>
+                                <div><p className="text-sm font-medium text-gray-500">Geburtstage</p><p className="text-2xl font-bold text-gray-900">{stats.geburtstage}</p></div>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                                <div className="flex items-center space-x-2 mb-6 border-b pb-3">
+                                    <i className="fa-solid fa-trophy text-yellow-500 text-2xl"></i><h2 className="text-lg font-bold text-gray-800">Wer war am häufigsten dabei?</h2>
+                                </div>
+                                <div>
+                                    {stats.sortedAttendance.map(([name, count], idx) => (
+                                        <BarChartItem key={name} label={`${idx + 1}. ${name}`} value={count} max={stats.sortedAttendance[0][1]} colorClass="bg-green-500" />
+                                    ))}
+                                    {stats.sortedAttendance.length === 0 && <div className="text-gray-400 text-sm">Keine Daten.</div>}
+                                </div>
+                            </div>
+
+                            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                                <div className="flex items-center space-x-2 mb-6 border-b pb-3">
+                                    <i className="fa-solid fa-location-dot text-indigo-500 text-2xl"></i><h2 className="text-lg font-bold text-gray-800">Wer war am häufigsten Gastgeber?</h2>
+                                </div>
+                                <div>
+                                    {stats.sortedHosts.map(([name, count], idx) => (
+                                        <BarChartItem key={name} label={`${idx + 1}. ${name}`} value={count} max={stats.sortedHosts[0][1]} colorClass="bg-indigo-500" />
+                                    ))}
+                                    {stats.sortedHosts.length === 0 && <div className="text-gray-400 text-sm">Keine Daten.</div>}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            <div className="flex items-center space-x-2 mb-2">
+                                <i className="fa-solid fa-chart-pie text-blue-500 text-2xl"></i><h2 className="text-lg font-bold text-gray-800">Treffen pro Jahr im Zeitraum</h2>
+                            </div>
+                            <LineChart data={stats.sortedYears} />
+                        </div>
+                    </div>
+                )}
+
+                {/* TAB: MATRIX */}
+                {activeTab === 'matrix' && (
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden duration-500">
+                        <div className="p-4 border-b border-gray-200 bg-gray-50 flex items-center space-x-2">
+                            <i className="fa-solid fa-table text-indigo-600 text-xl"></i><h2 className="text-lg font-bold text-gray-800">Teilnehmer-Matrix ({stats.timelineEvents.length} Termine)</h2>
+                        </div>
+                        <div className="p-4 bg-white border-b border-gray-100 flex gap-4 text-sm text-gray-600 flex-wrap">
+                            <div className="flex items-center space-x-2"><div className="w-4 h-4 bg-green-100 border border-green-200 rounded"></div> <span>Dabei gewesen</span></div>
+                            <div className="flex items-center space-x-2"><div className="w-4 h-4 bg-indigo-200 border border-indigo-400 rounded"></div> <b>Gastgeber (🏠)</b></div>
+                            <div className="flex items-center space-x-2"><div className="w-4 h-4 bg-red-50 border border-red-200 rounded"></div> <span className="text-red-500 font-medium">Ausgefallen</span></div>
+                        </div>
+                        
+                        <div className="overflow-x-auto pb-4 custom-scrollbar">
+                            <table className="min-w-full divide-y divide-gray-200 border-collapse">
+                                <thead>
+                                    <tr>
+                                        <th className="sticky left-0 z-20 bg-gray-100 p-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider shadow-[1px_0_0_0_#e5e7eb]">Datum &rarr;</th>
+                                        {stats.timelineEvents.map((ev, i) => (
+                                            <th key={i} className={`px-3 py-4 text-center text-xs font-semibold text-gray-600 border-l border-gray-200 min-w-[110px] transition-colors ${ev.status === 'Ausgefallen' ? 'bg-red-50 hover:bg-red-100' : 'bg-gray-50 hover:bg-gray-100'}`}>
+                                                <div className="flex flex-col items-center">
+                                                    <span className={ev.status === 'Ausgefallen' ? 'text-red-500 line-through' : ''}>{ev.datum.substring(5, 10).replace('-', '.')}</span>
+                                                    <span className="text-[10px] text-gray-400 font-normal">{ev.datum.substring(0, 4)}</span>
+                                                    {ev.status === 'Geburtstag' && <i className="fa-solid fa-cake-candles text-xl text-purple-500 mt-1" title="Geburtstag"></i>}
+                                                    {ev.status === 'Ausgefallen' && <span className="text-[10px] text-red-500 font-bold mt-1 uppercase tracking-wider">Ausfall</span>}
+                                                </div>
+                                            </th>
+                                        ))}
+                                        {stats.timelineEvents.length === 0 && <th className="px-6 py-4 text-gray-400 font-normal w-full text-left">Keine Termine im Zeitraum.</th>}
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-100">
+                                    {stats.matrixNames.map((name) => (
+                                        <tr key={name} className="hover:bg-indigo-50/30 transition-colors group">
+                                            <td className="sticky left-0 z-10 bg-white p-4 text-sm font-bold text-gray-800 shadow-[1px_0_0_0_#e5e7eb] group-hover:bg-gray-50">{name}</td>
+                                            {stats.timelineEvents.map((ev, i) => {
+                                                const isHost = ev.parsedHosts.includes(name);
+                                                const isPresent = ev.parsedAttendees.includes(name) || isHost; 
+                                                return (
+                                                    <td key={i} className={`p-2 border-l border-gray-100 text-center ${ev.status === 'Ausgefallen' ? 'bg-red-50/30' : ''}`}>
+                                                        {ev.status === 'Ausgefallen' ? (
+                                                            <div className="text-red-200 font-light text-xs">-</div>
+                                                        ) : isPresent ? (
+                                                            <div className={`py-2 px-1 mx-auto rounded-lg text-xs flex flex-col items-center justify-center transition-all ${isHost ? 'bg-indigo-200 text-indigo-900 font-extrabold border-2 border-indigo-400 shadow-sm scale-105 z-10 relative' : 'bg-green-100 text-green-800 border border-green-200'}`}>
+                                                                <span>{name.split(' ')[0]}</span> 
+                                                                {isHost && <span className="text-[10px] mt-0.5 tracking-tighter uppercase">Gastgeber</span>}
+                                                            </div>
+                                                        ) : (
+                                                            <div className="text-gray-300 font-light text-xs">-</div>
+                                                        )}
+                                                    </td>
+                                                );
+                                            })}
+                                            {stats.timelineEvents.length === 0 && <td></td>}
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                )}
+
+                {/* TAB: EINSTELLUNGEN */}
+                {activeTab === 'settings' && (
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden duration-500 p-6">
+                        <div className="flex items-center justify-between mb-8 border-b pb-4">
+                            <h2 className="text-xl font-bold text-gray-800 flex items-center space-x-2">
+                                <i className="fa-solid fa-gear text-indigo-600"></i>
+                                <span>Einstellungen & Daten</span>
+                            </h2>
+                            <button onClick={exportCSV} className="bg-slate-800 text-white px-4 py-2 rounded-lg hover:bg-slate-700 transition flex items-center space-x-2 text-sm font-semibold shadow-sm">
+                                <i className="fa-solid fa-file-csv"></i>
+                                <span>Als CSV Exportieren</span>
+                            </button>
+                        </div>
+                        
+                        <div className="mb-6">
+                            <h3 className="text-lg font-semibold text-gray-700 mb-4 flex items-center space-x-2">
+                                <i className="fa-solid fa-users text-indigo-500"></i>
+                                <span>Personen verwalten</span>
+                            </h3>
+                            <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-3 mb-6">
+                                <input 
+                                    type="text" 
+                                    placeholder="Neuer Name..." 
+                                    id="new-member-input"
+                                    className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none flex-grow max-w-sm"
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            const val = e.target.value.trim();
+                                            if (val && !members.includes(val)) {
+                                                const updatedMembers = [...members, val].sort();
+                                                setMembers(updatedMembers);
+                                                localStorage.setItem('hauskreis_app_members', JSON.stringify(updatedMembers));
+                                                e.target.value = '';
+                                            }
+                                        }
+                                    }}
+                                />
+                                <button 
+                                    onClick={() => {
+                                        const input = document.getElementById('new-member-input');
+                                        const val = input.value.trim();
+                                        if (val && !members.includes(val)) {
+                                            const updatedMembers = [...members, val].sort();
+                                            setMembers(updatedMembers);
+                                            localStorage.setItem('hauskreis_app_members', JSON.stringify(updatedMembers));
+                                            input.value = '';
+                                        }
+                                    }}
+                                    className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition shadow-sm font-medium"
+                                >
+                                    <i className="fa-solid fa-plus mr-2"></i>Hinzufügen
+                                </button>
+                            </div>
+                            <ul className="divide-y divide-gray-100 max-w-2xl border border-gray-200 rounded-xl bg-gray-50/50">
+                                {stats.matrixNames.map((m) => (
+                                    <li key={m} className="flex items-center justify-between p-4 hover:bg-white transition">
+                                        <span className="font-medium text-gray-800 text-base">{m}</span>
+                                        <div className="flex space-x-2">
+                                            <button 
+                                                onClick={() => {
+                                                    const newName = prompt("Neuer Name für " + m + ":", m);
+                                                    if (newName && newName.trim() !== "" && newName !== m) {
+                                                        const cleanName = newName.trim();
+                                                        
+                                                        // 1. Aktualisiere Namens-Liste im Menü (falls er drin ist oder es ein neuer Ghost ist)
+                                                        let updatedMembers = members.map(old => old === m ? cleanName : old);
+                                                        if (!updatedMembers.includes(cleanName)) {
+                                                            updatedMembers.push(cleanName);
+                                                        }
+                                                        updatedMembers = Array.from(new Set(updatedMembers)).sort();
+                                                        setMembers(updatedMembers);
+                                                        localStorage.setItem('hauskreis_app_members', JSON.stringify(updatedMembers));
+                                                        
+                                                        // 2. Aktualisiere historische Daten exakt
+                                                        if (window.confirm(`Sollen alle bisherigen Einträge von "${m}" ebenfalls in "${cleanName}" umbenannt werden?`)) {
+                                                            setAppData(prev => {
+                                                                const updatedData = prev.map(item => {
+                                                                    let updatedHost = item.gastgeber;
+                                                                    if (updatedHost && updatedHost !== '-' && updatedHost !== '?') {
+                                                                        // Splitten, genau matchen und wieder zusammensetzen
+                                                                        updatedHost = updatedHost.split('/').map(h => h.trim() === m ? cleanName : h.trim()).join(' / ');
+                                                                    }
+                                                                    
+                                                                    let updatedAnmerkungen = item.anmerkungen;
+                                                                    if (updatedAnmerkungen && updatedAnmerkungen.includes('Dabei:')) {
+                                                                        const parts = updatedAnmerkungen.split('Dabei:');
+                                                                        const textPart = parts[0];
+                                                                        let attendees = parts[1].split(',').map(p => p.trim() === m ? cleanName : p.trim()).filter(p => p);
+                                                                        attendees = Array.from(new Set(attendees)); // Duplikate löschen falls nötig
+                                                                        updatedAnmerkungen = textPart + 'Dabei: ' + attendees.join(', ');
+                                                                    }
+                                                                    return { ...item, gastgeber: updatedHost, anmerkungen: updatedAnmerkungen };
+                                                                });
+                                                                localStorage.setItem('hauskreis_app_data', JSON.stringify(updatedData));
+                                                                return updatedData;
+                                                            });
+                                                        }
+                                                    }
+                                                }}
+                                                className="text-blue-600 hover:text-blue-800 bg-blue-100 hover:bg-blue-200 px-3 py-1.5 rounded-lg transition text-sm font-medium flex items-center space-x-1"
+                                                title="Namen bearbeiten"
+                                            >
+                                                <i className="fa-solid fa-pen"></i><span>Bearbeiten</span>
+                                            </button>
+                                            <button 
+                                                onClick={() => {
+                                                    if(window.confirm("Bist du sicher, dass du " + m + " aus der Liste entfernen möchtest?")) {
+                                                        // 1. Aus Dropdown löschen
+                                                        const updatedMembers = members.filter(old => old !== m);
+                                                        setMembers(updatedMembers);
+                                                        localStorage.setItem('hauskreis_app_members', JSON.stringify(updatedMembers));
+                                                        
+                                                        // 2. Historische Daten löschen
+                                                        if (window.confirm(`Soll "${m}" auch aus allen alten Terminen (Gastgeber & Anwesenheit) herausgelöscht werden?`)) {
+                                                            setAppData(prev => {
+                                                                const updatedData = prev.map(item => {
+                                                                    let updatedHost = item.gastgeber;
+                                                                    if (updatedHost && updatedHost !== '-' && updatedHost !== '?') {
+                                                                        updatedHost = updatedHost.split('/').map(h => h.trim()).filter(h => h !== m).join(' / ');
+                                                                        if (!updatedHost) updatedHost = '?';
+                                                                    }
+
+                                                                    let updatedAnmerkungen = item.anmerkungen;
+                                                                    if (updatedAnmerkungen && updatedAnmerkungen.includes('Dabei:')) {
+                                                                        const parts = updatedAnmerkungen.split('Dabei:');
+                                                                        const textPart = parts[0];
+                                                                        let attendees = parts[1].split(',').map(p => p.trim()).filter(p => p !== m && p !== '');
+                                                                        if (attendees.length > 0) {
+                                                                            updatedAnmerkungen = textPart + 'Dabei: ' + attendees.join(', ');
+                                                                        } else {
+                                                                            updatedAnmerkungen = textPart.replace(/\|\s*$/, '').trim();
+                                                                        }
+                                                                    }
+                                                                    return { ...item, gastgeber: updatedHost, anmerkungen: updatedAnmerkungen };
+                                                                });
+                                                                localStorage.setItem('hauskreis_app_data', JSON.stringify(updatedData));
+                                                                return updatedData;
+                                                            });
+                                                        }
+                                                    }
+                                                }}
+                                                className="text-red-600 hover:text-red-800 bg-red-100 hover:bg-red-200 px-3 py-1.5 rounded-lg transition text-sm font-medium flex items-center space-x-1"
+                                                title="Person entfernen"
+                                            >
+                                                <i className="fa-solid fa-trash"></i><span>Löschen</span>
+                                            </button>
+                                        </div>
+                                    </li>
+                                ))}
+                                {stats.matrixNames.length === 0 && (
+                                    <li className="p-4 text-gray-500 text-center">Keine Personen angelegt.</li>
+                                )}
+                            </ul>
+                        </div>
+                    </div>
+                )}
+              </main>
+            </div>
+          );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
