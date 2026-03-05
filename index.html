@@ -1473,37 +1473,84 @@
               }
           }, []);
 
-          const [appData, setAppData] = useState(initialData);
+          const dedupeAndSortData = (entries) => {
+              const dataByKey = new Map();
+              (entries || []).forEach((item) => {
+                  if (!item || !item.datum) return;
+                  const normalized = {
+                      datum: item.datum,
+                      status: item.status || 'Stattgefunden',
+                      gastgeber: item.gastgeber ?? '?',
+                      ort: item.ort ?? '?',
+                      anmerkungen: item.anmerkungen || ''
+                  };
+                  const key = `${normalized.datum}||${normalized.status}||${normalized.gastgeber}||${normalized.ort}||${normalized.anmerkungen}`;
+                  dataByKey.set(key, normalized);
+              });
+              return Array.from(dataByKey.values()).sort((a, b) => a.datum.localeCompare(b.datum));
+          };
+          const getLastDate = (entries) => {
+              if (!entries || entries.length === 0) return '';
+              return entries[entries.length - 1].datum || '';
+          };
+
+          const [appData, setAppData] = useState(() => dedupeAndSortData(initialData));
 
           // Versuche Daten aus dem lokalen Browser-Speicher wiederherzustellen
           useEffect(() => {
+              const baseData = dedupeAndSortData(initialData);
+              let nextData = baseData;
               const savedData = localStorage.getItem('hauskreis_app_data');
               if (savedData) {
                   try {
                       const parsed = JSON.parse(savedData);
-                      // FIX: Lade LocalStorage, auch wenn die Länge gleich ist (erhält Namensänderungen bei F5/Reload)
-                      if (parsed.length >= initialData.length) {
-                          setAppData(parsed);
+                      const saved = dedupeAndSortData(parsed);
+                      const baseLastDate = getLastDate(baseData);
+                      const savedLastDate = getLastDate(saved);
+                      const savedIsNewer = savedLastDate > baseLastDate;
+                      const savedHasMoreRows = saved.length > baseData.length;
+                      if (savedIsNewer || savedHasMoreRows || baseData.length === 0) {
+                          nextData = saved;
                       }
                   } catch (e) {}
               }
+              setAppData(nextData);
+              localStorage.setItem('hauskreis_app_data', JSON.stringify(nextData));
+
               const savedMembers = localStorage.getItem('hauskreis_app_members');
               if (savedMembers) {
                   try {
-                      setMembers(JSON.parse(savedMembers));
+                      const parsedMembers = JSON.parse(savedMembers)
+                          .map(name => (name || '').trim())
+                          .filter(Boolean);
+                      const cleanMembers = Array.from(new Set(parsedMembers)).sort();
+                      if (cleanMembers.length > 0) {
+                          setMembers(cleanMembers);
+                          localStorage.setItem('hauskreis_app_members', JSON.stringify(cleanMembers));
+                      }
                   } catch (e) {}
               }
-          }, [initialData]);
+          }, [initialData, initialMembers]);
 
           // Datums-Filter
           const allDates = useMemo(() => appData.map(d => d.datum).sort(), [appData]);
           const [startDate, setStartDate] = useState('');
           const [endDate, setEndDate] = useState('');
+          const [isAutoDateRange, setIsAutoDateRange] = useState(true);
 
           useEffect(() => {
-              if (!startDate && allDates.length > 0) setStartDate(allDates[0]);
-              if (!endDate && allDates.length > 0) setEndDate(allDates[allDates.length - 1]);
-          }, [allDates, startDate, endDate]);
+              if (allDates.length === 0) {
+                  if (startDate || endDate) {
+                      setStartDate('');
+                      setEndDate('');
+                  }
+                  return;
+              }
+              if (isAutoDateRange || !startDate || !endDate) {
+                  setStartDate(allDates[0]);
+                  setEndDate(allDates[allDates.length - 1]);
+              }
+          }, [allDates, isAutoDateRange, startDate, endDate]);
 
           const normalizeName = (name) => {
             if (!name) return "";
@@ -1700,11 +1747,12 @@
                   };
                   
                   setAppData(prev => {
-                      const updated = [...prev, newItem];
-                      const sorted = updated.sort((a, b) => new Date(a.datum) - new Date(b.datum));
+                      const sorted = dedupeAndSortData([...prev, newItem]);
                       localStorage.setItem('hauskreis_app_data', JSON.stringify(sorted));
                       return sorted;
                   });
+                  setStartDate(prev => (!prev || newDate < prev ? newDate : prev));
+                  setEndDate(prev => (!prev || newDate > prev ? newDate : prev));
                   
                   setShowAddModal(false);
               };
@@ -1769,6 +1817,17 @@
                       </div>
                   </div>
               );
+          };
+
+          const resetLocalDataToFile = () => {
+              const baseData = dedupeAndSortData(initialData);
+              const baseMembers = Array.from(new Set(initialMembers)).sort();
+              localStorage.setItem('hauskreis_app_data', JSON.stringify(baseData));
+              localStorage.setItem('hauskreis_app_members', JSON.stringify(baseMembers));
+              setAppData(baseData);
+              setMembers(baseMembers);
+              setIsAutoDateRange(true);
+              alert("Lokale Browserdaten wurden auf den Stand der HTML-Datei zurückgesetzt.");
           };
 
           const BarChartItem = ({ label, value, max, colorClass }) => {
@@ -1864,12 +1923,15 @@
                       <div className="flex flex-wrap items-center gap-4">
                           <div className="flex items-center space-x-2">
                               <label className="text-gray-500 font-medium">Von:</label>
-                              <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="border border-gray-300 rounded-md px-3 py-1.5 outline-none text-gray-700 bg-gray-50" />
+                              <input type="date" value={startDate} onChange={e => { setIsAutoDateRange(false); setStartDate(e.target.value); }} className="border border-gray-300 rounded-md px-3 py-1.5 outline-none text-gray-700 bg-gray-50" />
                           </div>
                           <div className="flex items-center space-x-2">
                               <label className="text-gray-500 font-medium">Bis:</label>
-                              <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className="border border-gray-300 rounded-md px-3 py-1.5 outline-none text-gray-700 bg-gray-50" />
+                              <input type="date" value={endDate} onChange={e => { setIsAutoDateRange(false); setEndDate(e.target.value); }} className="border border-gray-300 rounded-md px-3 py-1.5 outline-none text-gray-700 bg-gray-50" />
                           </div>
+                          <button onClick={() => setIsAutoDateRange(true)} className="text-indigo-700 bg-indigo-100 hover:bg-indigo-200 px-3 py-1.5 rounded-md font-semibold transition">
+                              Gesamter Zeitraum
+                          </button>
                       </div>
                       <div className="ml-auto flex items-center space-x-2 text-indigo-800 bg-indigo-50 px-3 py-1 rounded-full font-bold text-xs">
                           <i className="fa-solid fa-database"></i>
@@ -2017,6 +2079,14 @@
                                 <i className="fa-solid fa-users text-indigo-500"></i>
                                 <span>Personen verwalten</span>
                             </h3>
+                            <div className="mb-4">
+                                <button
+                                    onClick={resetLocalDataToFile}
+                                    className="bg-amber-100 text-amber-900 border border-amber-300 hover:bg-amber-200 px-4 py-2 rounded-lg transition text-sm font-semibold"
+                                >
+                                    Lokale Browserdaten auf Datei-Stand zurücksetzen
+                                </button>
+                            </div>
                             <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-3 mb-6">
                                 <input 
                                     type="text" 
