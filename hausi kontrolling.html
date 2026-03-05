@@ -1448,7 +1448,7 @@
 
         function App() {
           const [activeTab, setActiveTab] = useState('dashboard');
-          const [searchTerm, setSearchTerm] = useState('');
+          const [entrySearch, setEntrySearch] = useState('');
           const [showAddModal, setShowAddModal] = useState(false);
           
           // Liest die Mitglieder zu Beginn aus
@@ -1488,6 +1488,10 @@
                   dataByKey.set(key, normalized);
               });
               return Array.from(dataByKey.values()).sort((a, b) => a.datum.localeCompare(b.datum));
+          };
+          const getEntryKey = (item) => {
+              if (!item) return '';
+              return `${item.datum || ''}||${item.status || ''}||${item.gastgeber || ''}||${item.ort || ''}||${item.anmerkungen || ''}`;
           };
           const getLastDate = (entries) => {
               if (!entries || entries.length === 0) return '';
@@ -1560,6 +1564,18 @@
           const dataInDateRange = useMemo(() => {
               return appData.filter(item => item.datum >= startDate && item.datum <= endDate);
           }, [startDate, endDate, appData]);
+
+          const filteredEntries = useMemo(() => {
+              const q = entrySearch.trim().toLowerCase();
+              const source = appData.map(item => ({ ...item, __key: getEntryKey(item) }));
+              const filtered = q
+                  ? source.filter(item => {
+                      const haystack = `${item.datum} ${item.status} ${item.gastgeber} ${item.ort} ${item.anmerkungen}`.toLowerCase();
+                      return haystack.includes(q);
+                  })
+                  : source;
+              return filtered.sort((a, b) => b.datum.localeCompare(a.datum));
+          }, [appData, entrySearch]);
 
           const stats = useMemo(() => {
             let total = dataInDateRange.length;
@@ -1828,6 +1844,19 @@
               setMembers(baseMembers);
               setIsAutoDateRange(true);
               alert("Lokale Browserdaten wurden auf den Stand der HTML-Datei zurückgesetzt.");
+          };
+
+          const deleteEntry = (entry) => {
+              if (!entry) return;
+              const label = `${entry.datum} (${entry.status})`;
+              if (!window.confirm(`Diesen Termin wirklich löschen?\n\n${label}`)) return;
+              setAppData(prev => {
+                  const idx = prev.findIndex(item => getEntryKey(item) === entry.__key);
+                  if (idx === -1) return prev;
+                  const updated = [...prev.slice(0, idx), ...prev.slice(idx + 1)];
+                  localStorage.setItem('hauskreis_app_data', JSON.stringify(updated));
+                  return updated;
+              });
           };
 
           const BarChartItem = ({ label, value, max, colorClass }) => {
@@ -2219,6 +2248,57 @@
                                 ))}
                                 {stats.matrixNames.length === 0 && (
                                     <li className="p-4 text-gray-500 text-center">Keine Personen angelegt.</li>
+                                )}
+                            </ul>
+                        </div>
+
+                        <div className="mt-10 pt-8 border-t border-gray-200">
+                            <h3 className="text-lg font-semibold text-gray-700 mb-4 flex items-center space-x-2">
+                                <i className="fa-solid fa-calendar-xmark text-red-500"></i>
+                                <span>Termine verwalten</span>
+                            </h3>
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
+                                <input
+                                    type="text"
+                                    value={entrySearch}
+                                    onChange={e => setEntrySearch(e.target.value)}
+                                    placeholder="Termin suchen (Datum, Status, Gastgeber, Ort, Anmerkung)..."
+                                    className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none flex-grow"
+                                />
+                                <div className="text-xs font-semibold text-indigo-700 bg-indigo-50 px-3 py-2 rounded-lg whitespace-nowrap">
+                                    {filteredEntries.length} von {appData.length} Terminen
+                                </div>
+                            </div>
+
+                            <ul className="divide-y divide-gray-100 border border-gray-200 rounded-xl bg-gray-50/50 max-h-[420px] overflow-y-auto custom-scrollbar">
+                                {filteredEntries.map((entry) => (
+                                    <li key={entry.__key} className="p-4 flex flex-col md:flex-row md:items-start md:justify-between gap-3 hover:bg-white transition">
+                                        <div className="min-w-0">
+                                            <div className="flex flex-wrap items-center gap-2 mb-2">
+                                                <span className="text-sm font-bold text-gray-900">{entry.datum}</span>
+                                                <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
+                                                    entry.status === 'Stattgefunden' ? 'bg-green-100 text-green-800' :
+                                                    entry.status === 'Ausgefallen' ? 'bg-red-100 text-red-800' :
+                                                    'bg-purple-100 text-purple-800'
+                                                }`}>{entry.status}</span>
+                                            </div>
+                                            <div className="text-sm text-gray-700"><b>Gastgeber:</b> {entry.gastgeber || '-'}</div>
+                                            <div className="text-sm text-gray-700"><b>Ort:</b> {entry.ort || '-'}</div>
+                                            {entry.anmerkungen && <div className="text-sm text-gray-600 mt-1 break-words"><b>Anmerkung:</b> {entry.anmerkungen}</div>}
+                                        </div>
+                                        <div className="flex-shrink-0">
+                                            <button
+                                                onClick={() => deleteEntry(entry)}
+                                                className="text-red-700 hover:text-red-900 bg-red-100 hover:bg-red-200 px-3 py-2 rounded-lg transition text-sm font-semibold flex items-center space-x-2"
+                                                title="Termin löschen"
+                                            >
+                                                <i className="fa-solid fa-trash"></i><span>Löschen</span>
+                                            </button>
+                                        </div>
+                                    </li>
+                                ))}
+                                {filteredEntries.length === 0 && (
+                                    <li className="p-4 text-gray-500 text-center">Keine passenden Termine gefunden.</li>
                                 )}
                             </ul>
                         </div>
